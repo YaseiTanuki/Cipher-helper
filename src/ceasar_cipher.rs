@@ -4,11 +4,15 @@ pub struct CeasarCipher {
 }
 
 pub trait Encode {
-    fn encode(&mut self,  key: i8) -> String;
+    fn encode(&self,  key: i8) -> String;
 }
 
 pub trait Decode {
-    fn decode(&mut self, key: i8) -> String;
+    fn decode(&self, key: i8) -> String;
+}
+
+pub trait BruteForce {
+    fn brute_force(&self);
 }
 
 impl CeasarCipher {
@@ -35,7 +39,7 @@ impl CeasarCipher {
 }
 
 impl Encode for CeasarCipher {
-    fn encode(&mut self, key: i8) -> String {
+    fn encode(&self, key: i8) -> String {
         
         let mut new_char_code: i8;
         let mut encoded_text = String::from("");
@@ -56,13 +60,12 @@ impl Encode for CeasarCipher {
             encoded_text.push(new_char_code as u8 as char);
         }
 
-        self.set_encoded_text(encoded_text.to_owned());
         return encoded_text;
     }
 }
 
 impl Decode for CeasarCipher {
-    fn decode(&mut self, key: i8) -> String {
+    fn decode(&self, key: i8) -> String {
         let mut new_char_code: i8;
         let mut decoded_text = String::from("");
 
@@ -82,7 +85,14 @@ impl Decode for CeasarCipher {
             decoded_text.push(new_char_code as u8 as char);
         }
 
-        self.set_plain(decoded_text.to_owned());
         return decoded_text;
+    }
+}
+
+impl BruteForce for CeasarCipher {
+    fn brute_force(&self) {
+        for key in 0..26 {
+            print!("KEY: {0}\nDECODED TEXT: {1}\n\n", key, self.decode(key));
+        }
     }
 }
