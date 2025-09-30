@@ -1,6 +1,6 @@
 use std::env;
 
-use caesar_cipher_method::{BruteForce, CeasarCipher, Decode, Encode};
+use caesar_cipher_method::{BruteForce, CaesarCipher, Decode, Encode};
 
 fn print_usage() {
     println!(
@@ -45,7 +45,7 @@ fn main() {
                 return;
             };
 
-            let mut cipher = CeasarCipher::new();
+            let mut cipher = CaesarCipher::new();
             cipher.set_plain(plain);
             let encoded = cipher.encode(key);
             println!("{}", encoded);
@@ -67,7 +67,7 @@ fn main() {
                 return;
             };
 
-            let mut cipher = CeasarCipher::new();
+            let mut cipher = CaesarCipher::new();
             cipher.set_encoded_text(encoded_text);
             let decoded = cipher.decode(key);
             println!("{}", decoded);
@@ -78,7 +78,7 @@ fn main() {
                 print_usage();
                 return;
             };
-            let mut cipher = CeasarCipher::new();
+            let mut cipher = CaesarCipher::new();
             cipher.set_encoded_text(encoded_text);
             println!("Brute force result:");
             cipher.brute_force();

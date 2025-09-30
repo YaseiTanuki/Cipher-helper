@@ -1,10 +1,12 @@
-pub struct CeasarCipher {
+// src/caesar_cipher.rs
+
+pub struct CaesarCipher {
     plain: String,
     encoded_text: String,
 }
 
 pub trait Encode {
-    fn encode(&self,  key: i8) -> String;
+    fn encode(&self, key: i8) -> String;
 }
 
 pub trait Decode {
@@ -15,13 +17,15 @@ pub trait BruteForce {
     fn brute_force(&self);
 }
 
-impl CeasarCipher {
-
+impl CaesarCipher {
     pub fn new() -> Self {
-        return Self {plain: "".to_string(), encoded_text: "".to_string()}
+        Self {
+            plain: String::new(),
+            encoded_text: String::new(),
+        }
     }
 
-    pub fn set_plain (&mut self, new_plain: String) {
+    pub fn set_plain(&mut self, new_plain: String) {
         self.plain = new_plain;
     }
 
@@ -29,72 +33,69 @@ impl CeasarCipher {
         self.encoded_text = new_encoded_text;
     }
 
-    pub fn get_plain(&self) -> String {
-        return self.plain.clone();
+    // Trả về &str thay vì clone nếu cần hiệu năng
+    pub fn get_plain(&self) -> &str {
+        &self.plain
     }
 
-    pub fn get_encoded_text(&self) -> String {
-        return self.encoded_text.clone();
+    pub fn get_encoded_text(&self) -> &str {
+        &self.encoded_text
     }
 }
 
-impl Encode for CeasarCipher {
+// helper: chuẩn hoá shift về [0,25]
+fn normalize_shift(key: i8) -> u8 {
+    (key as i16).rem_euclid(26) as u8
+}
+
+impl Encode for CaesarCipher {
     fn encode(&self, key: i8) -> String {
-        
-        let mut new_char_code: i8;
-        let mut encoded_text = String::from("");
+        let shift = normalize_shift(key);
+        let mut out = String::with_capacity(self.plain.len());
 
-        for char in self.plain.chars() {
-            if char.is_alphabetic() {
-                if char.is_uppercase() {
-                    new_char_code = ((char as i8) - 65 + key).rem_euclid(26) + 65;
-                }
-                else {
-                    new_char_code = ((char as i8) - 97 + key).rem_euclid(26) + 97;
-                }
-            }
-            else {
-                new_char_code = char as i8;
-            }
-
-            encoded_text.push(new_char_code as u8 as char);
+        for &b in self.plain.as_bytes() {
+            let new_b = if b.is_ascii_uppercase() {
+                ((b - b'A' + shift) % 26) + b'A'
+            } else if b.is_ascii_lowercase() {
+                ((b - b'a' + shift) % 26) + b'a'
+            } else {
+                b
+            };
+            out.push(new_b as char);
         }
 
-        return encoded_text;
+        out
     }
 }
 
-impl Decode for CeasarCipher {
+impl Decode for CaesarCipher {
     fn decode(&self, key: i8) -> String {
-        let mut new_char_code: i8;
-        let mut decoded_text = String::from("");
+        // decode bằng cách dịch ngược: -key
+        let shift = normalize_shift(-key);
+        let mut out = String::with_capacity(self.encoded_text.len());
 
-        for char in self.encoded_text.chars() {
-            if char.is_alphabetic() {
-                if char.is_uppercase() {
-                    new_char_code = ((char as i8) - 65 - key).rem_euclid(26) + 65;
-                }
-                else {
-                    new_char_code = ((char as i8) - 97 - key).rem_euclid(26) + 97;
-                }
-            }
-            else {
-                new_char_code = char as i8;
-            }
-
-            decoded_text.push(new_char_code as u8 as char);
+        for &b in self.encoded_text.as_bytes() {
+            let new_b = if b.is_ascii_uppercase() {
+                ((b - b'A' + shift) % 26) + b'A'
+            } else if b.is_ascii_lowercase() {
+                ((b - b'a' + shift) % 26) + b'a'
+            } else {
+                b
+            };
+            out.push(new_b as char);
         }
 
-        return decoded_text;
+        out
     }
 }
 
-impl BruteForce for CeasarCipher {
+impl BruteForce for CaesarCipher {
     fn brute_force(&self) {
         let mut warned = false;
+
         for key in 0..26 {
             let decoded = self.decode(key);
-            // Use Python-based check; if Python unavailable, skip printing
+            // Gọi hàm py_meaningful_ratio giống trước — giữ behavior cũ
             let ratio = match crate::py_dict::py_meaningful_ratio(&decoded) {
                 Ok(r) => r,
                 Err(e) => {
@@ -105,8 +106,14 @@ impl BruteForce for CeasarCipher {
                     0.0
                 }
             };
+
             if ratio > 0.5 {
-                print!("KEY: {0} (meaningful: {1:.0}%)\nDECODED TEXT: {2}\n\n", key, ratio * 100.0, decoded);
+                println!(
+                    "KEY: {} (meaningful: {:.0}%)\nDECODED TEXT: {}\n",
+                    key,
+                    ratio * 100.0,
+                    decoded
+                );
             }
         }
     }
