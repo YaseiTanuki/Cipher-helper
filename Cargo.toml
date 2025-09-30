@@ -1,5 +1,5 @@
 [package]
-name = "caesar_cipher_method"
+name = "cipher_helper"
 version = "0.1.0"
 edition = "2021"
 
@@ -8,3 +8,7 @@ edition = "2021"
 [dependencies]
 pyo3 = { version = "0.21", features = ["auto-initialize", "abi3-py37"] }
 clap = { version = "4", features = ["derive"] }
+
+[[bin]]
+name = "caesar"
+path = "src/main.rs"

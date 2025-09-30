@@ -1,5 +1,5 @@
 use clap::{Parser, Subcommand};
-use caesar_cipher_method::{BruteForce, CaesarCipher, Decode, Encode};
+use cipher_helper::{BruteForce, CaesarCipher, Decode, Encode};
 
 #[derive(Parser)]
 #[command(name = "caesar_cipher_method")]

@@ -1,21 +1,10 @@
 // src/caesar_cipher.rs
 
+use crate::traits::{Decode, Encode, BruteForce};
+
 pub struct CaesarCipher {
     plain: String,
     encoded_text: String,
-}
-
-pub trait Encode {
-    fn encode(&self, key: i8) -> String;
-}
-
-pub trait Decode {
-    fn decode(&self, key: i8) -> String;
-}
-
-pub trait BruteForce {
-    fn brute_force(&self);
-    fn brute_force_all(&self);
 }
 
 impl CaesarCipher {

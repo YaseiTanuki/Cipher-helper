@@ -1,7 +1,9 @@
-pub mod ceasar_cipher;
+pub mod caesar;
 pub mod py_dict;
+pub mod traits;
 
-pub use crate::ceasar_cipher::{BruteForce, CaesarCipher, Decode, Encode};
+pub use crate::caesar::CaesarCipher;
 pub use crate::py_dict::py_meaningful_ratio;
+pub use crate::traits::{BruteForce, Decode, Encode};
 
 
