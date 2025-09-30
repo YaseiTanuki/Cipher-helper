@@ -47,10 +47,10 @@ impl Encode for CeasarCipher {
         for char in self.plain.chars() {
             if char.is_alphabetic() {
                 if char.is_uppercase() {
-                    new_char_code = ((char as i8) - 65 + key) % 26 + 65;
+                    new_char_code = ((char as i8) - 65 + key).rem_euclid(26) + 65;
                 }
                 else {
-                    new_char_code = ((char as i8) - 97 + key) % 26 + 97;
+                    new_char_code = ((char as i8) - 97 + key).rem_euclid(26) + 97;
                 }
             }
             else {
@@ -91,8 +91,23 @@ impl Decode for CeasarCipher {
 
 impl BruteForce for CeasarCipher {
     fn brute_force(&self) {
+        let mut warned = false;
         for key in 0..26 {
-            print!("KEY: {0}\nDECODED TEXT: {1}\n\n", key, self.decode(key));
+            let decoded = self.decode(key);
+            // Use Python-based check; if Python unavailable, skip printing
+            let ratio = match crate::py_dict::py_meaningful_ratio(&decoded) {
+                Ok(r) => r,
+                Err(e) => {
+                    if !warned {
+                        eprintln!("[warn] Python wordfreq unavailable: {}", e);
+                        warned = true;
+                    }
+                    0.0
+                }
+            };
+            if ratio > 0.5 {
+                print!("KEY: {0} (meaningful: {1:.0}%)\nDECODED TEXT: {2}\n\n", key, ratio * 100.0, decoded);
+            }
         }
     }
 }
