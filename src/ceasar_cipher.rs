@@ -15,6 +15,7 @@ pub trait Decode {
 
 pub trait BruteForce {
     fn brute_force(&self);
+    fn brute_force_all(&self);
 }
 
 impl CaesarCipher {
@@ -115,6 +116,13 @@ impl BruteForce for CaesarCipher {
                     decoded
                 );
             }
+        }
+    }
+
+    fn brute_force_all(&self) {
+        for key in 0..26 {
+            let decoded = self.decode(key);
+            println!("KEY: {}\nDECODED TEXT: {}\n", key, decoded);
         }
     }
 }
