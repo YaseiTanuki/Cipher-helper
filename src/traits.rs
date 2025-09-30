@@ -1,9 +1,9 @@
 pub trait Encode {
-    fn encode(&self, key: i8) -> String;
+    fn encode(&self, key: Option<i8>) -> String;
 }
 
 pub trait Decode {
-    fn decode(&self, key: i8) -> String;
+    fn decode(&self, key: Option<i8>) -> String;
 }
 
 pub trait BruteForce {

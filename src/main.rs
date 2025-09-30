@@ -71,7 +71,7 @@ fn main() {
 
             let mut cipher = CaesarCipher::new();
             cipher.set_plain(plain_text);
-            let encoded = cipher.encode(key);
+            let encoded = cipher.encode(Some(key));
             println!("{}", encoded);
         }
 
@@ -87,7 +87,7 @@ fn main() {
 
             let mut cipher = CaesarCipher::new();
             cipher.set_encoded_text(encoded_text);
-            let decoded = cipher.decode(key);
+            let decoded = cipher.decode(Some(key));
             println!("{}", decoded);
         }
 

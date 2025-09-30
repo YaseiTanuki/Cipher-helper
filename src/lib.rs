@@ -5,5 +5,3 @@ pub mod traits;
 pub use crate::caesar::CaesarCipher;
 pub use crate::py_dict::py_meaningful_ratio;
 pub use crate::traits::{BruteForce, Decode, Encode};
-
-

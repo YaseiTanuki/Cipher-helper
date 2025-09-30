@@ -39,8 +39,8 @@ fn normalize_shift(key: i8) -> u8 {
 }
 
 impl Encode for CaesarCipher {
-    fn encode(&self, key: i8) -> String {
-        let shift = normalize_shift(key);
+    fn encode(&self, key: Option<i8>) -> String {
+        let shift = normalize_shift(key.expect("Key is required for encoding"));
         let mut out = String::with_capacity(self.plain.len());
 
         for &b in self.plain.as_bytes() {
@@ -59,9 +59,9 @@ impl Encode for CaesarCipher {
 }
 
 impl Decode for CaesarCipher {
-    fn decode(&self, key: i8) -> String {
+    fn decode(&self, key: Option<i8>) -> String {
         // decode bằng cách dịch ngược: -key
-        let shift = normalize_shift(-key);
+        let shift = normalize_shift(-key.expect("Key is required for decoding"));
         let mut out = String::with_capacity(self.encoded_text.len());
 
         for &b in self.encoded_text.as_bytes() {
@@ -84,7 +84,7 @@ impl BruteForce for CaesarCipher {
         let mut warned = false;
 
         for key in 0..26 {
-            let decoded = self.decode(key);
+            let decoded = self.decode(Some(key));
             // Gọi hàm py_meaningful_ratio giống trước — giữ behavior cũ
             let ratio = match crate::py_dict::py_meaningful_ratio(&decoded) {
                 Ok(r) => r,
@@ -110,7 +110,7 @@ impl BruteForce for CaesarCipher {
 
     fn brute_force_all(&self) {
         for key in 0..26 {
-            let decoded = self.decode(key);
+            let decoded = self.decode(Some(key));
             println!("KEY: {}\nDECODED TEXT: {}\n", key, decoded);
         }
     }
