@@ -1,5 +1,6 @@
 use clap::{Parser, Subcommand};
 use cipher_helper::{BruteForce, CaesarCipher, Decode, Encode};
+use cipher_helper::caesar::DecodedResult;
 
 #[derive(Parser)]
 #[command(name = "caesar_cipher_method")]
@@ -38,6 +39,7 @@ enum Commands {
 
         /// encoded text to brute-force
         encoded_text: String,
+        threshold: Option<f32>,
     },
 }
 
@@ -88,23 +90,41 @@ fn main() {
             let mut cipher = CaesarCipher::new();
             cipher.set_encoded_text(encoded_text);
             let decoded = cipher.decode(Some(key));
-            println!("{}", decoded);
+            println!("Decoded result: {}", decoded); // in kiểu pretty
         }
 
-        Commands::Brute { all, encoded_text } => {
+        Commands::Brute { all, encoded_text, threshold } => {
             let mut cipher = CaesarCipher::new();
             cipher.set_encoded_text(encoded_text);
+
             println!("Brute force result:");
 
-            if all {
-                // gọi method in tất cả kết quả
-                // giả sử trait BruteForce có brute_force_all
-                // nếu tên khác, đổi tương ứng
-                BruteForce::brute_force_all(&mut cipher);
+            // Lấy kết quả (chú ý: phương thức trả Vec<DecodedResult>)
+            let mut results: Vec<DecodedResult> = if all {
+                // tất cả kết quả
+                cipher.brute_force_all()
             } else {
-                // phương thức in/hiện best-guess hoặc làm 1 lần brute
-                BruteForce::brute_force(&mut cipher);
+                // lọc theo threshold (threshold: Option<f32>)
+                cipher.brute_force(threshold)
+            };
+
+            // Nếu muốn, sort theo meaningful_ratio giảm dần (None coi là 0.0)
+            results.sort_by(|a, b| {
+                let ra = a.meaningful_ratio.unwrap_or(0.0);
+                let rb = b.meaningful_ratio.unwrap_or(0.0);
+                // partial_cmp vì f32 có NaN; unwrap_or Equal nếu so sánh thất bại
+                rb.partial_cmp(&ra).unwrap_or(std::cmp::Ordering::Equal)
+            });
+
+            if results.is_empty() {
+                println!("Không tìm được kết quả — có thể do meaningful_ratio = None hoặc threshold quá cao.");
+            } else {
+                for (i, r) in results.into_iter().enumerate() {
+                    // Dùng Display đã cài màu; nếu muốn hiển thị thêm ratio rõ ràng:
+                    println!("{:02}. {}", i + 1, r);
+                }
             }
         }
+
     }
 }

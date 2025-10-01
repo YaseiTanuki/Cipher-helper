@@ -1,10 +1,32 @@
 // src/caesar_cipher.rs
 
 use crate::traits::{Decode, Encode, BruteForce};
+use std::fmt::{Display, Formatter, Result as FmtResult};
+use colored::*;
 
 pub struct CaesarCipher {
     plain: String,
     encoded_text: String,
+}
+
+#[derive(Debug)]
+pub struct DecodedResult {
+    pub text: String,
+    pub key: u8,
+    pub meaningful_ratio: Option<f32>,
+}
+
+impl Display for DecodedResult {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        let key_str = format!("{}", self.key).bright_blue();
+        let text_str = &self.text.green();
+        if let Some(ratio) = self.meaningful_ratio {
+            let ratio_str = format!("{:.2}", ratio).yellow();
+            write!(f, "[Key: {}, meaningful Ratio: {}] {}", key_str, ratio_str, text_str)
+        } else {
+            write!(f, "[Key: {}] {}", key_str, text_str)
+        }
+    }
 }
 
 impl CaesarCipher {
@@ -59,9 +81,9 @@ impl Encode for CaesarCipher {
 }
 
 impl Decode for CaesarCipher {
-    fn decode(&self, key: Option<i8>) -> String {
-        // decode bằng cách dịch ngược: -key
-        let shift = normalize_shift(-key.expect("Key is required for decoding"));
+    fn decode(&self, key: Option<i8>) -> DecodedResult {
+        let key_val = key.expect("Key is required for decoding");
+        let shift = normalize_shift(-key_val);
         let mut out = String::with_capacity(self.encoded_text.len());
 
         for &b in self.encoded_text.as_bytes() {
@@ -75,43 +97,52 @@ impl Decode for CaesarCipher {
             out.push(new_b as char);
         }
 
-        out
+        // Tính meaningful_ratio nếu có py_dict, hoặc None nếu không muốn tính
+        let ratio = match crate::py_dict::py_meaningful_ratio(&out) {
+            Ok(r) => Some(r),
+            Err(_) => None,
+        };
+
+        DecodedResult {
+            text: out,
+            key: key_val as u8,
+            meaningful_ratio: ratio,
+        }
     }
 }
 
 impl BruteForce for CaesarCipher {
-    fn brute_force(&self) {
+    // Trả về các kết quả có meaningful_ratio > threshold (nếu có)
+    fn brute_force(&self, threshold: Option<f32>) -> Vec<DecodedResult> {
+        let mut results: Vec<DecodedResult> = Vec::new();
         let mut warned = false;
 
         for key in 0..26 {
             let decoded = self.decode(Some(key));
-            // Gọi hàm py_meaningful_ratio giống trước — giữ behavior cũ
-            let ratio = match crate::py_dict::py_meaningful_ratio(&decoded) {
-                Ok(r) => r,
-                Err(e) => {
-                    if !warned {
-                        eprintln!("[warn] Python wordfreq unavailable: {}", e);
-                        warned = true;
-                    }
-                    0.0
-                }
-            };
+            let ratio = decoded.meaningful_ratio.unwrap_or(0.0);
 
-            if ratio > 0.5 {
-                println!(
-                    "KEY: {} (meaningful: {:.0}%)\nDECODED TEXT: {}\n",
-                    key,
-                    ratio * 100.0,
-                    decoded
-                );
+            if decoded.meaningful_ratio.is_none() && !warned {
+                eprintln!("[warn] Python wordfreq unavailable or error when computing meaningful ratio.");
+                warned = true;
+            }
+
+            if ratio >= threshold.unwrap_or(0.5) {
+                results.push(decoded);
             }
         }
+
+        results
     }
 
-    fn brute_force_all(&self) {
+    // Trả về tất cả kết quả (không filter)
+    fn brute_force_all(&self) -> Vec<DecodedResult> {
+        let mut results: Vec<DecodedResult> = Vec::new();
+
         for key in 0..26 {
             let decoded = self.decode(Some(key));
-            println!("KEY: {}\nDECODED TEXT: {}\n", key, decoded);
+            results.push(decoded);
         }
+
+        results
     }
 }
