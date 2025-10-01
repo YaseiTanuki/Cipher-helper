@@ -98,7 +98,7 @@ impl Decode for CaesarCipher {
         }
 
         // Tính meaningful_ratio nếu có py_dict, hoặc None nếu không muốn tính
-        let ratio = match crate::py_dict::py_meaningful_ratio(&out) {
+        let ratio = match crate::py_meaningful_ratio(&out) {
             Ok(r) => Some(r),
             Err(_) => None,
         };
