@@ -1,7 +1,7 @@
 use crate::caesar::caesar::DecodedResult;
 
 pub trait Encode {
-    fn encode(&self, key: Option<i8>) -> String;
+    fn encode(&mut self, key: Option<i8>) -> String;
 }
 
 pub trait Decode {

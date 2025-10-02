@@ -3,6 +3,7 @@
 use crate::traits::{Decode, Encode, BruteForce};
 use std::fmt::{Display, Formatter, Result as FmtResult};
 use colored::*;
+use crate::normalize_shift;
 
 pub struct CaesarCipher {
     plain: String,
@@ -37,31 +38,45 @@ impl CaesarCipher {
         }
     }
 
+    // Constructor từ text đã mã hóa sẵn
+    pub fn from_encoded(encoded: String) -> Self {
+        Self {
+            plain: String::new(),
+            encoded_text: encoded,
+        }
+    }
+
+    // Constructor từ text gốc
+    pub fn from_plain(plain: String) -> Self {
+        Self {
+            plain: plain, 
+            encoded_text: String::new(),
+        }
+    }
+
     pub fn set_plain(&mut self, new_plain: String) {
-        self.plain = new_plain;
+        self.plain = new_plain.to_string();
     }
 
     pub fn set_encoded_text(&mut self, new_encoded_text: String) {
-        self.encoded_text = new_encoded_text;
+        self.encoded_text = new_encoded_text.to_string();
     }
 
-    // Trả về &str thay vì clone nếu cần hiệu năng
-    pub fn get_plain(&self) -> &str {
-        &self.plain
+    pub fn get_plain(&self) -> String {
+        self.plain.clone()
     }
 
-    pub fn get_encoded_text(&self) -> &str {
-        &self.encoded_text
+    pub fn get_encoded_text(&self) -> String {
+        self.encoded_text.clone()
     }
-}
-
-// helper: chuẩn hoá shift về [0,25]
-fn normalize_shift(key: i8) -> u8 {
-    (key as i16).rem_euclid(26) as u8
 }
 
 impl Encode for CaesarCipher {
-    fn encode(&self, key: Option<i8>) -> String {
+    fn encode(&mut self, key: Option<i8>) -> String {
+        if self.plain.is_empty() {
+            eprint!("[warn] Plain text is empty, nothing to encode.");
+            return String::new();
+        }
         let shift = normalize_shift(key.expect("Key is required for encoding"));
         let mut out = String::with_capacity(self.plain.len());
 
@@ -76,7 +91,9 @@ impl Encode for CaesarCipher {
             out.push(new_b as char);
         }
 
-        out
+        self.set_encoded_text(out);
+
+        self.encoded_text.clone()
     }
 }
 
