@@ -52,12 +52,14 @@ impl CaesarCipher {
         }
     }
 
-    pub fn set_plain(&mut self, new_plain: String) {
-        self.plain = new_plain.to_string();
+    pub fn set_plain(&mut self, new_plain: String) -> &mut Self {
+        self.plain = new_plain;
+        self
     }
 
-    pub fn set_encrypted_text(&mut self, new_encrypted_text: String) {
-        self.encrypted_text = new_encrypted_text.to_string();
+    pub fn set_encrypted_text(&mut self, new_encrypted_text: String) -> &mut Self {
+        self.encrypted_text = new_encrypted_text;
+        self
     }
 
     pub fn get_plain(&self) -> String {
