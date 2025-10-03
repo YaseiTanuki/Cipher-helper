@@ -1,8 +1,13 @@
+//! Lightweight free functions for Caesar cipher operations.
+//!
+//! These helpers mirror the methods exposed by `CaesarCipher` but avoid
+//! allocating struct instances, making them convenient for scripting use.
+
 use crate::normalize_shift;
 use crate::py_meaningful_ratio;
 use crate::DecodedResult;
 
-/// Free function version of encrypt
+/// Encrypt plain text with a rotation key, returning the cipher text.
 pub fn caesar_encrypt(text: &str, key: i8) -> String {
     let shift = normalize_shift(key);
     let mut out = String::with_capacity(text.len());
@@ -21,7 +26,7 @@ pub fn caesar_encrypt(text: &str, key: i8) -> String {
     out
 }
 
-/// Free function version of decrypt
+/// Decrypt cipher text with a rotation key, returning metadata about the result.
 pub fn caesar_decrypt(encrypted: &str, key: i8) -> DecodedResult {
     let shift = normalize_shift(-key);
     let mut out = String::with_capacity(encrypted.len());
@@ -49,7 +54,7 @@ pub fn caesar_decrypt(encrypted: &str, key: i8) -> DecodedResult {
     }
 }
 
-/// Free function version of brute_force
+/// Brute-force search for candidate plaintext that meet a meaningfulness threshold.
 pub fn caesar_brute_force(encrypted: &str, threshold: Option<f32>) -> Vec<DecodedResult> {
     let mut results: Vec<DecodedResult> = Vec::new();
     let mut warned = false;
@@ -71,7 +76,7 @@ pub fn caesar_brute_force(encrypted: &str, threshold: Option<f32>) -> Vec<Decode
     results
 }
 
-/// Free function version of brute_force_all
+/// Return every brute-force candidate for the 26 Caesar cipher rotations.
 pub fn caesar_brute_force_all(encrypted: &str) -> Vec<DecodedResult> {
     let mut results: Vec<DecodedResult> = Vec::new();
     for key in 0..26 {
