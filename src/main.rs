@@ -1,6 +1,6 @@
 use clap::{Parser, Subcommand};
 use cipher_helper::caesar::DecodedResult;
-use cipher_helper::{decrypt, encrypt, brute_force, brute_force_all};
+use cipher_helper::{caesar_decrypt, caesar_encrypt, caesar_brute_force, caesar_brute_force_all};
 
 #[derive(Parser)]
 #[command(name = "caesar_cipher_method")]
@@ -69,7 +69,7 @@ fn main() {
                 }
             };
 
-            println!("{}", encrypt(&plain_text, key));
+            println!("{}", caesar_encrypt(&plain_text, key));
         } 
 
         Commands::Decrypt { key, encrypted_text } => {
@@ -82,16 +82,16 @@ fn main() {
                 }
             };
 
-            println!("Decrypted result: {}", decrypt(&encrypted_text, key));
+            println!("Decrypted result: {}", caesar_decrypt(&encrypted_text, key));
         }
 
         Commands::Brute { all, encoded_text, threshold } => {
             println!("Brute force result:");
 
             let mut results: Vec<DecodedResult> = if all {
-                brute_force_all(&encoded_text)
+                caesar_brute_force_all(&encoded_text)
             } else {
-                brute_force(&encoded_text, threshold)
+                caesar_brute_force(&encoded_text, threshold)
             };
 
             results.sort_by(|a, b| {

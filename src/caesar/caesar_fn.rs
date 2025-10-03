@@ -3,7 +3,7 @@ use crate::py_meaningful_ratio;
 use crate::DecodedResult;
 
 /// Free function version of encrypt
-pub fn encrypt(text: &str, key: i8) -> String {
+pub fn caesar_encrypt(text: &str, key: i8) -> String {
     let shift = normalize_shift(key);
     let mut out = String::with_capacity(text.len());
 
@@ -22,7 +22,7 @@ pub fn encrypt(text: &str, key: i8) -> String {
 }
 
 /// Free function version of decrypt
-pub fn decrypt(encrypted: &str, key: i8) -> DecodedResult {
+pub fn caesar_decrypt(encrypted: &str, key: i8) -> DecodedResult {
     let shift = normalize_shift(-key);
     let mut out = String::with_capacity(encrypted.len());
 
@@ -50,12 +50,12 @@ pub fn decrypt(encrypted: &str, key: i8) -> DecodedResult {
 }
 
 /// Free function version of brute_force
-pub fn brute_force(encrypted: &str, threshold: Option<f32>) -> Vec<DecodedResult> {
+pub fn caesar_brute_force(encrypted: &str, threshold: Option<f32>) -> Vec<DecodedResult> {
     let mut results: Vec<DecodedResult> = Vec::new();
     let mut warned = false;
 
     for key in 0..26 {
-        let decrypted = decrypt(encrypted, key);
+        let decrypted = caesar_decrypt(encrypted, key);
         let ratio = decrypted.meaningful_ratio.unwrap_or(0.0);
 
         if decrypted.meaningful_ratio.is_none() && !warned {
@@ -72,10 +72,10 @@ pub fn brute_force(encrypted: &str, threshold: Option<f32>) -> Vec<DecodedResult
 }
 
 /// Free function version of brute_force_all
-pub fn brute_force_all(encrypted: &str) -> Vec<DecodedResult> {
+pub fn caesar_brute_force_all(encrypted: &str) -> Vec<DecodedResult> {
     let mut results: Vec<DecodedResult> = Vec::new();
     for key in 0..26 {
-        results.push(decrypt(encrypted, key));
+        results.push(caesar_decrypt(encrypted, key));
     }
     results
 }
