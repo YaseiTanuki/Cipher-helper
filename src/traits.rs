@@ -1,11 +1,11 @@
 use crate::caesar::caesar::DecodedResult;
 
-pub trait Encode {
-    fn encode(&mut self, key: Option<i8>) -> String;
+pub trait Encrypt {
+    fn encrypt(&mut self, key: Option<i8>) -> String;
 }
 
-pub trait Decode {
-    fn decode(&self, key: Option<i8>) -> DecodedResult;
+pub trait Decrypt {
+    fn decrypt(&self, key: Option<i8>) -> DecodedResult;
 }
 
 pub trait BruteForce {

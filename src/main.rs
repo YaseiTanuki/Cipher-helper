@@ -1,6 +1,6 @@
 use clap::{Parser, Subcommand};
 use cipher_helper::caesar::DecodedResult;
-use cipher_helper::{decode, encode, brute_force, brute_force_all};
+use cipher_helper::{decrypt, encrypt, brute_force, brute_force_all};
 
 #[derive(Parser)]
 #[command(name = "caesar_cipher_method")]
@@ -13,8 +13,8 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Encode plain text with a key
-    Encode {
+    /// Encrypt plain text with a key
+    Encrypt {
         /// rotation key, can be negative or >26 (mod 26)
         key: i16,
 
@@ -22,13 +22,13 @@ enum Commands {
         plain_text: String,
     },
 
-    /// Decode encoded text with a key
-    Decode {
+    /// Decrypt encrypted text with a key
+    Decrypt {
         /// rotation key, can be negative or >26 (mod 26)
         key: i16,
 
-        /// encoded text (wrap multi-word in quotes)
-        encoded_text: String,
+        /// encrypted text (wrap multi-word in quotes)
+        encrypted_text: String,
     },
 
     Brute {
@@ -43,7 +43,7 @@ enum Commands {
 
 fn print_usage() {
     println!(
-        "Usage:\n  caesar_cipher_method encode <key:i8> <plain_text>\n  caesar_cipher_method decode <key:i8> <encoded_text>\n  caesar_cipher_method brute [-a|--all] <encoded_text>\n\nNotes:\n  - key can be negative or >26; rotation is modulo 26\n  - wrap multi-word text in quotes"
+        "Usage:\n  caesar_cipher_method encrypt <key:i8> <plain_text>\n  caesar_cipher_method decrypt <key:i8> <encrypted_text>\n  caesar_cipher_method brute [-a|--all] <encrypted_text>\n\nNotes:\n  - key can be negative or >26; rotation is modulo 26\n  - wrap multi-word text in quotes"
     );
 }
 
@@ -59,7 +59,7 @@ fn main() {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Encode { key, plain_text } => {
+        Commands::Encrypt { key, plain_text } => {
             let key = match parse_key_i8(key) {
                 Ok(k) => k,
                 Err(e) => {
@@ -69,10 +69,10 @@ fn main() {
                 }
             };
 
-            println!("{}", encode(&plain_text, key));
+            println!("{}", encrypt(&plain_text, key));
         } 
 
-        Commands::Decode { key, encoded_text } => {
+        Commands::Decrypt { key, encrypted_text } => {
             let key = match parse_key_i8(key) {
                 Ok(k) => k,
                 Err(e) => {
@@ -82,7 +82,7 @@ fn main() {
                 }
             };
 
-            println!("Decoded result: {}", decode(&encoded_text, key));
+            println!("Decrypted result: {}", decrypt(&encrypted_text, key));
         }
 
         Commands::Brute { all, encoded_text, threshold } => {

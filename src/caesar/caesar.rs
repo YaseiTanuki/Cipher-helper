@@ -1,13 +1,13 @@
 // src/caesar_cipher.rs
 
-use crate::traits::{Decode, Encode, BruteForce};
+use crate::traits::{Decrypt, Encrypt, BruteForce};
 use std::fmt::{Display, Formatter, Result as FmtResult};
 use colored::*;
 use crate::normalize_shift;
 
 pub struct CaesarCipher {
     plain: String,
-    encoded_text: String,
+    encrypted_text: String,
 }
 
 #[derive(Debug)]
@@ -34,21 +34,21 @@ impl CaesarCipher {
     pub fn new() -> Self {
         Self {
             plain: String::new(),
-            encoded_text: String::new(),
+            encrypted_text: String::new(),
         }
     }
 
-    pub fn from_encoded(encoded: String) -> Self {
+    pub fn from_encrypted(encrypted: String) -> Self {
         Self {
             plain: String::new(),
-            encoded_text: encoded,
+            encrypted_text: encrypted,
         }
     }
 
     pub fn from_plain(plain: String) -> Self {
         Self {
             plain: plain, 
-            encoded_text: String::new(),
+            encrypted_text: String::new(),
         }
     }
 
@@ -56,26 +56,26 @@ impl CaesarCipher {
         self.plain = new_plain.to_string();
     }
 
-    pub fn set_encoded_text(&mut self, new_encoded_text: String) {
-        self.encoded_text = new_encoded_text.to_string();
+    pub fn set_encrypted_text(&mut self, new_encrypted_text: String) {
+        self.encrypted_text = new_encrypted_text.to_string();
     }
 
     pub fn get_plain(&self) -> String {
         self.plain.clone()
     }
 
-    pub fn get_encoded_text(&self) -> String {
-        self.encoded_text.clone()
+    pub fn get_encrypted_text(&self) -> String {
+        self.encrypted_text.clone()
     }
 }
 
-impl Encode for CaesarCipher {
-    fn encode(&mut self, key: Option<i8>) -> String {
+impl Encrypt for CaesarCipher {
+    fn encrypt(&mut self, key: Option<i8>) -> String {
         if self.plain.is_empty() {
-            eprint!("[warn] Plain text is empty, nothing to encode.");
+            eprint!("[warn] Plain text is empty, nothing to encrypt.");
             return String::new();
         }
-        let shift = normalize_shift(key.expect("Key is required for encoding"));
+        let shift = normalize_shift(key.expect("Key is required for encryption"));
         let mut out = String::with_capacity(self.plain.len());
 
         for &b in self.plain.as_bytes() {
@@ -89,19 +89,19 @@ impl Encode for CaesarCipher {
             out.push(new_b as char);
         }
 
-        self.set_encoded_text(out);
+        self.set_encrypted_text(out);
 
-        self.encoded_text.clone()
+        self.encrypted_text.clone()
     }
 }
 
-impl Decode for CaesarCipher {
-    fn decode(&self, key: Option<i8>) -> DecodedResult {
-        let key_val = key.expect("Key is required for decoding");
+impl Decrypt for CaesarCipher {
+    fn decrypt(&self, key: Option<i8>) -> DecodedResult {
+        let key_val = key.expect("Key is required for decryption");
         let shift = normalize_shift(-key_val);
-        let mut out = String::with_capacity(self.encoded_text.len());
+        let mut out = String::with_capacity(self.encrypted_text.len());
 
-        for &b in self.encoded_text.as_bytes() {
+        for &b in self.encrypted_text.as_bytes() {
             let new_b = if b.is_ascii_uppercase() {
                 ((b - b'A' + shift) % 26) + b'A'
             } else if b.is_ascii_lowercase() {
@@ -131,16 +131,16 @@ impl BruteForce for CaesarCipher {
         let mut warned = false;
 
         for key in 0..26 {
-            let decoded = self.decode(Some(key));
-            let ratio = decoded.meaningful_ratio.unwrap_or(0.0);
+            let decrypted = self.decrypt(Some(key));
+            let ratio = decrypted.meaningful_ratio.unwrap_or(0.0);
 
-            if decoded.meaningful_ratio.is_none() && !warned {
+            if decrypted.meaningful_ratio.is_none() && !warned {
                 eprintln!("[warn] Python wordfreq unavailable or error when computing meaningful ratio.");
                 warned = true;
             }
 
             if ratio >= threshold.unwrap_or(0.5) {
-                results.push(decoded);
+                results.push(decrypted);
             }
         }
 
@@ -151,8 +151,8 @@ impl BruteForce for CaesarCipher {
         let mut results: Vec<DecodedResult> = Vec::new();
 
         for key in 0..26 {
-            let decoded = self.decode(Some(key));
-            results.push(decoded);
+            let decrypted = self.decrypt(Some(key));
+            results.push(decrypted);
         }
 
         results

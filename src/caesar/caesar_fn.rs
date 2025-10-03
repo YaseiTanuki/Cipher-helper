@@ -2,8 +2,8 @@ use crate::normalize_shift;
 use crate::py_meaningful_ratio;
 use crate::DecodedResult;
 
-/// Free function version of encode
-pub fn encode(text: &str, key: i8) -> String {
+/// Free function version of encrypt
+pub fn encrypt(text: &str, key: i8) -> String {
     let shift = normalize_shift(key);
     let mut out = String::with_capacity(text.len());
 
@@ -21,12 +21,12 @@ pub fn encode(text: &str, key: i8) -> String {
     out
 }
 
-/// Free function version of decode
-pub fn decode(encoded: &str, key: i8) -> DecodedResult {
+/// Free function version of decrypt
+pub fn decrypt(encrypted: &str, key: i8) -> DecodedResult {
     let shift = normalize_shift(-key);
-    let mut out = String::with_capacity(encoded.len());
+    let mut out = String::with_capacity(encrypted.len());
 
-    for &b in encoded.as_bytes() {
+    for &b in encrypted.as_bytes() {
         let new_b = if b.is_ascii_uppercase() {
             ((b - b'A' + shift) % 26) + b'A'
         } else if b.is_ascii_lowercase() {
@@ -50,21 +50,21 @@ pub fn decode(encoded: &str, key: i8) -> DecodedResult {
 }
 
 /// Free function version of brute_force
-pub fn brute_force(encoded: &str, threshold: Option<f32>) -> Vec<DecodedResult> {
+pub fn brute_force(encrypted: &str, threshold: Option<f32>) -> Vec<DecodedResult> {
     let mut results: Vec<DecodedResult> = Vec::new();
     let mut warned = false;
 
     for key in 0..26 {
-        let decoded = decode(encoded, key);
-        let ratio = decoded.meaningful_ratio.unwrap_or(0.0);
+        let decrypted = decrypt(encrypted, key);
+        let ratio = decrypted.meaningful_ratio.unwrap_or(0.0);
 
-        if decoded.meaningful_ratio.is_none() && !warned {
+        if decrypted.meaningful_ratio.is_none() && !warned {
             eprintln!("[warn] Python wordfreq unavailable or error when computing meaningful ratio.");
             warned = true;
         }
 
         if ratio >= threshold.unwrap_or(0.5) {
-            results.push(decoded);
+            results.push(decrypted);
         }
     }
 
@@ -72,10 +72,10 @@ pub fn brute_force(encoded: &str, threshold: Option<f32>) -> Vec<DecodedResult> 
 }
 
 /// Free function version of brute_force_all
-pub fn brute_force_all(encoded: &str) -> Vec<DecodedResult> {
+pub fn brute_force_all(encrypted: &str) -> Vec<DecodedResult> {
     let mut results: Vec<DecodedResult> = Vec::new();
     for key in 0..26 {
-        results.push(decode(encoded, key));
+        results.push(decrypt(encrypted, key));
     }
     results
 }
