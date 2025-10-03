@@ -1,6 +1,6 @@
 use clap::{Parser, Subcommand};
-use cipher_helper::caesar::DecodedResult;
-use cipher_helper::{caesar_decrypt, caesar_encrypt, caesar_brute_force, caesar_brute_force_all};
+use cryptan::caesar::DecodedResult;
+use cryptan::{caesar_decrypt, caesar_encrypt, caesar_brute_force, caesar_brute_force_all};
 
 #[derive(Parser)]
 #[command(name = "caesar_cipher_method")]
