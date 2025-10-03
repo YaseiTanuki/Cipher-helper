@@ -1,6 +1,6 @@
 use clap::{Parser, Subcommand};
-use cipher_helper::{BruteForce, CaesarCipher, Decode, Encode};
 use cipher_helper::caesar::DecodedResult;
+use cipher_helper::{decode, encode, brute_force, brute_force_all};
 
 #[derive(Parser)]
 #[command(name = "caesar_cipher_method")]
@@ -31,13 +31,11 @@ enum Commands {
         encoded_text: String,
     },
 
-    /// Brute-force the encoded text
     Brute {
         /// Print all results (short: -a, long: --all)
         #[arg(short = 'a', long = "all")]
         all: bool,
 
-        /// encoded text to brute-force
         encoded_text: String,
         threshold: Option<f32>,
     },
@@ -71,10 +69,8 @@ fn main() {
                 }
             };
 
-            let mut cipher = CaesarCipher::from_plain(plain_text);
-            let encoded = cipher.encode(Some(key));
-            println!("{}", encoded);
-        }
+            println!("{}", encode(&plain_text, key));
+        } 
 
         Commands::Decode { key, encoded_text } => {
             let key = match parse_key_i8(key) {
@@ -86,39 +82,28 @@ fn main() {
                 }
             };
 
-            let cipher = CaesarCipher::from_encoded(encoded_text);
-            let decoded = cipher.decode(Some(key));
-            println!("Decoded result: {}", decoded); // in kiểu pretty
+            println!("Decoded result: {}", decode(&encoded_text, key));
         }
 
         Commands::Brute { all, encoded_text, threshold } => {
-            let mut cipher = CaesarCipher::new();
-            cipher.set_encoded_text(encoded_text);
-
             println!("Brute force result:");
 
-            // Lấy kết quả (chú ý: phương thức trả Vec<DecodedResult>)
             let mut results: Vec<DecodedResult> = if all {
-                // tất cả kết quả
-                cipher.brute_force_all()
+                brute_force_all(&encoded_text)
             } else {
-                // lọc theo threshold (threshold: Option<f32>)
-                cipher.brute_force(threshold)
+                brute_force(&encoded_text, threshold)
             };
 
-            // Nếu muốn, sort theo meaningful_ratio giảm dần (None coi là 0.0)
             results.sort_by(|a, b| {
                 let ra = a.meaningful_ratio.unwrap_or(0.0);
                 let rb = b.meaningful_ratio.unwrap_or(0.0);
-                // partial_cmp vì f32 có NaN; unwrap_or Equal nếu so sánh thất bại
                 rb.partial_cmp(&ra).unwrap_or(std::cmp::Ordering::Equal)
             });
 
             if results.is_empty() {
-                println!("Không tìm được kết quả — có thể do meaningful_ratio = None hoặc threshold quá cao.");
+                println!("No meaningful result found.");
             } else {
                 for (i, r) in results.into_iter().enumerate() {
-                    // Dùng Display đã cài màu; nếu muốn hiển thị thêm ratio rõ ràng:
                     println!("{:02}. {}", i + 1, r);
                 }
             }

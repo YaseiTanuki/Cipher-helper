@@ -38,7 +38,6 @@ impl CaesarCipher {
         }
     }
 
-    // Constructor từ text đã mã hóa sẵn
     pub fn from_encoded(encoded: String) -> Self {
         Self {
             plain: String::new(),
@@ -46,7 +45,6 @@ impl CaesarCipher {
         }
     }
 
-    // Constructor từ text gốc
     pub fn from_plain(plain: String) -> Self {
         Self {
             plain: plain, 
@@ -114,7 +112,6 @@ impl Decode for CaesarCipher {
             out.push(new_b as char);
         }
 
-        // Tính meaningful_ratio nếu có py_dict, hoặc None nếu không muốn tính
         let ratio = match crate::py_meaningful_ratio(&out) {
             Ok(r) => Some(r),
             Err(_) => None,
@@ -129,7 +126,6 @@ impl Decode for CaesarCipher {
 }
 
 impl BruteForce for CaesarCipher {
-    // Trả về các kết quả có meaningful_ratio > threshold (nếu có)
     fn brute_force(&self, threshold: Option<f32>) -> Vec<DecodedResult> {
         let mut results: Vec<DecodedResult> = Vec::new();
         let mut warned = false;
@@ -150,8 +146,7 @@ impl BruteForce for CaesarCipher {
 
         results
     }
-
-    // Trả về tất cả kết quả (không filter)
+    
     fn brute_force_all(&self) -> Vec<DecodedResult> {
         let mut results: Vec<DecodedResult> = Vec::new();
 
