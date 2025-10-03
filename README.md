@@ -94,10 +94,20 @@ For advanced scenarios you can work directly with the `CaesarCipher` type and im
 
 ## Project layout
 
-- `src/main.rs`: CLI entrypoint using `clap`.
-- `src/lib.rs`: Library exports for Caesar helpers and utilities.
-- `src/caesar/`: Caesar cipher implementation and brute-force logic.
-- `src/utils/`: Shared utilities, including Python integration for meaningfulness scoring.
+```
+cryptan/
+├── Cargo.toml
+├── README.md
+├── src/
+│   ├── lib.rs
+│   ├── main.rs
+│   ├── caesar/
+│   ├── traits.rs
+│   └── utils/
+│       └── py/
+└── target/
+    └── ...
+```
 
 ## Contributing
 
