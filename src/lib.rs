@@ -9,10 +9,3 @@ pub use classical::*;
 pub use utils::*;
 /// Traits describing common cipher capabilities.
 pub use traits::*;
-
-
-#[cfg(feature = "python")]
-pub mod python;
-
-#[cfg(feature = "python")]
-pub use python::*;
