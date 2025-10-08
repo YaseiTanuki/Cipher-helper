@@ -1,118 +1,118 @@
 # Cryptan
 
-Cryptan is a Rust toolkit for experimenting with the classic Caesar cipher. It provides a command-line interface and reusable library helpers for encrypting, decrypting, and brute-forcing ciphertext. Optional Python integration (via `pyo3`) uses the `wordfreq` package to score decoded results.
+Cryptan is a small Rust toolkit and CLI for experimenting with the classic Caesar cipher. It provides:
+
+- A command-line binary (installed as `caesar` via `cargo install` or run with `cargo run`).
+- A reusable library API exposing a builder-style `CaesarCipher` and a `DecodedResult` payload used by the bruteforce routine.
 
 ## Features
 
-- Encrypt plaintext with arbitrary rotation keys, including negative and >26 values.
-- Decrypt ciphertext for a known key.
-- Brute-force search possible keys, returning the most meaningful results first.
-- Optional scoring of decoded text using Python's `wordfreq` frequencies.
-- Usable as a CLI (`caesar`) or as a Rust library (`cryptan`).
+- Encrypt/decrypt using integer rotation keys (supports negative and >26 keys; rotation is modulo 26).
+- Brute-force all 26 rotations and optionally filter results by a "meaningfulness" ratio computed against `public/words.txt`.
 
 ## Requirements
 
-- Rust 1.70+ (edition 2021).
-- Python 3.7+ with the `wordfreq` package installed when you want meaningfulness scoring.
+- Rust (edition 2021). Recent rustup-stable releases work (1.70+ is sufficient).
 
-Install the Python dependency with:
+## Build and install
 
-```shell
-pip install wordfreq
-```
+From the repository root:
 
-If `wordfreq` is unavailable, brute-force output is still produced but without meaningfulness scores.
+```powershell
+# build & run locally
+cargo run -- <subcommand> [args...]
 
-## Installation
-
-### From source
-
-Clone this repository and build the CLI locally:
-
-```shell
+# or install the binary into your cargo bin directory
 cargo install --path .
 ```
 
-This installs the `caesar` binary in your Cargo bin directory.
+When installed, the binary name comes from `Cargo.toml` ([[bin]] name = "caesar").
 
-### Library usage
+## CLI usage
 
-Add the crate as a dependency in your `Cargo.toml` (use a path while developing locally):
+The CLI supports three subcommands: `encrypt`, `decrypt`, and `brute`.
 
-```toml
-[dependencies]
-cryptan = { path = "../Cipher-helper" }
+Examples:
+
+```powershell
+# encrypt: cargo run -- encrypt <key:i16> "plain text"
+cargo run -- encrypt 3 "attack at dawn"
+
+# decrypt: cargo run -- decrypt <key:i16> "encrypted text"
+cargo run -- decrypt 3 "dwwdfn dw gdzq"
+
+# brute-force: cargo run -- brute "encoded text" [threshold:f32]
+# threshold is optional; if omitted all candidates are returned (threshold defaults to 0.0)
+cargo run -- brute "ftue rcjj" 0.6
 ```
 
-## Command-line usage
+Note: `cargo run --` passes the following tokens to the binary. If you installed the package with `cargo install`, run the `caesar` binary directly (e.g. `caesar brute "ftue rcjj"`).
 
-List the available subcommands:
+## Library usage
 
-```shell
-caesar --help
-```
-
-Encrypt plaintext with a key:
-
-```shell
-caesar encrypt 3 "attack at dawn"
-```
-
-Decrypt ciphertext when you know the key:
-
-```shell
-caesar decrypt 3 "dwwdfn dw gdzq"
-```
-
-Brute-force every rotation and rely on meaningfulness scoring (defaults to threshold 0.5):
-
-```shell
-caesar brute "ftue rcjj" --threshold 0.6
-```
-
-Show every decoded variant regardless of score:
-
-```shell
-caesar brute --all "ftue rcjj"
-```
-
-## Library examples
-
-Encrypt and decrypt in your own code using the convenience functions exported by `cryptan`:
+There are no top-level convenience functions called `caesar_encrypt`/`caesar_decrypt` in the current code. Use the provided types instead:
 
 ```rust
-use cryptan::{caesar_encrypt, caesar_decrypt};
+use cryptan::classical::caesar::CaesarCipher;
 
-let secret = caesar_encrypt("attack at dawn", 3);
+let c = CaesarCipher::from_key(3);
+let secret = c.encrypt("attack at dawn");
 assert_eq!(secret, "dwwdfn dw gdzq");
 
-let recovered = caesar_decrypt(&secret, 3);
-assert_eq!(recovered.text, "attack at dawn");
+let recovered = c.decrypt(&secret);
+assert_eq!(recovered, "attack at dawn");
 ```
 
-For advanced scenarios you can work directly with the `CaesarCipher` type and implement the `Encrypt`, `Decrypt`, or `BruteForce` traits.
+For brute-force you get a `Vec<DecodedResult>` (see `src/utils/utils_struct.rs`) where each `DecodedResult` includes `text`, `key`, and optional `meaningful_ratio`.
 
-## Project layout
+## Important implementation notes
+
+- CLI: the binary is configured in `Cargo.toml` ([[bin]] name = "caesar", path = "src/main.rs"). The clap-based CLI is defined in `src/main.rs` and exposes `encrypt`, `decrypt`, and `brute` subcommands.
+- Cipher implementation: `src/classical/caesar/caesar.rs` provides the `CaesarCipher` type implementing the `ClassicalCipher` and `BruteForce` traits (`src/traits.rs`).
+- Meaningfulness scoring: `src/utils/utils.rs::meaningful_ratio` uses the plain word list loaded from `public/words.txt` via `load_set`.
+- Decoded output formatting: `src/utils/utils_struct.rs::DecodedResult` implements `Display` with colored output.
+
+## Project layout (partial)
 
 ```
-cryptan/
+Cipher-helper/
 ├── Cargo.toml
+├── LICENSE
 ├── README.md
+├── public/
+│   └── words.txt
 ├── src/
 │   ├── lib.rs
 │   ├── main.rs
-│   ├── caesar/
+│   ├── classical/    # module: `cryptan::classical`
+│   │   └── caesar/   # module: `cryptan::classical::caesar`
 │   ├── traits.rs
-│   └── utils/
-│       └── py/
+   │   
+│   └── utils/        # module: `cryptan::utils`
 └── target/
-    └── ...
+   └── ...
 ```
 
 ## Contributing
 
-Issues and pull requests are welcome. Please ensure Rust code is formatted (`cargo fmt`) and passes clippy checks (`cargo clippy`) before submitting.
+Contributions welcome. Follow repository conventions:
+
+- Format code with `cargo fmt`.
+- Run basic checks with `cargo clippy` and `cargo test` (add tests under `src/` or `tests/` as needed).
 
 ## License
 
-This project is currently unlicensed. Please add a license file before distributing binaries or publishing the crate.
+This crate is licensed under Apache-2.0 (see `Cargo.toml`).
+
+## Acknowledgements & used crates
+
+Thanks to the maintainers of the [dwyl/english-words](https://github.com/dwyl/english-words) repository for the public word list included at `public/words.txt`.
+
+Primary crates used in this project:
+
+- [clap](https://crates.io/crates/clap) — Command-line argument parsing and subcommand parsing for the binary (declares CLI, derives parsers from structs).
+- [colored](https://crates.io/crates/colored) — Adds ANSI color helpers for terminal output (used by `DecodedResult` Display impl).
+- [log](https://crates.io/crates/log) — Logging facade for libraries and binaries; provides logging macros (`info!`, `warn!`, etc.).
+- [env_logger](https://crates.io/crates/env_logger) — A logger implementation that reads log level from environment variables (integrates with `log`).
+
+Special thanks to the maintainers and contributors of the linked projects for their time and open-source work — this project benefits from your efforts.
