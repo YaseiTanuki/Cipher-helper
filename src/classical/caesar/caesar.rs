@@ -1,3 +1,6 @@
+use crate::{normalize_shift, load_set, meaningful_ratio, ClassicalCipher, BruteForce, DecodedResult};
+use log::{warn, info};
+
 /// A Caesar cipher implementation supporting encryption, decryption, and brute-force attacks.
 ///
 /// The Caesar cipher is a simple substitution cipher that shifts each letter in the
