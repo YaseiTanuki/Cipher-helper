@@ -3,6 +3,12 @@ use std::collections::{HashSet, HashMap};
 
 static EMBEDDED_WORDS: &str = include_str!("../../public/words.txt");
 
+pub fn print_usage() {
+    println!(
+        "Usage:\n  caesar_cipher_method encrypt <key:i8> <plain_text>\n  caesar_cipher_method decrypt <key:i8> <encrypted_text>\n  caesar_cipher_method brute [-a|--all] <encrypted_text>\n\nNotes:\n  - key can be negative or >26; rotation is modulo 26\n  - wrap multi-word text in quotes"
+    );
+}
+
 pub fn normalize_shift(key: i8) -> u8 {
     (key as i16).rem_euclid(26) as u8
 }
