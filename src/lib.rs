@@ -74,11 +74,13 @@
 //! with modern cryptanalysis techniques.
 
 pub mod classical;
+pub mod encoding;
 pub mod utils;
 pub mod traits;
 
 /// Types and helper functions for Caesar cipher operations.
 pub use classical::*;
+pub use encoding::*;
 /// Utility helpers including shift normalization and optional Python integration.
 pub use utils::*;
 /// Traits describing common cipher capabilities.

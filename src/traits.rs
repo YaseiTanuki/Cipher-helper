@@ -120,3 +120,8 @@ pub trait BruteForce {
     /// - For ciphers with large key spaces, this operation may be computationally expensive
     fn bruteforce(&mut self, input: &str, threshold: Option<f32>) -> Vec<DecodedResult>;
 }
+
+pub trait Codec {
+    fn encode(&self, input: &str) -> String;
+    fn decode(&self, input: &str) -> String;
+}
