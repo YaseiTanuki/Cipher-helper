@@ -9,6 +9,12 @@ repository = "https://github.com/YaseiTanuki/Cryptan"
 readme = "README.md"
 keywords = ["crypto", "cipher", "caesar"]
 categories = ["cryptography", "encoding"]
+include = [
+    "src/**",
+    "public/**",
+    "Cargo.toml",
+    "README.md",
+]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

@@ -52,18 +52,48 @@ Note: `cargo run --` passes the following tokens to the binary. If you installed
 
 There are no top-level convenience functions called `caesar_encrypt`/`caesar_decrypt` in the current code. Use the provided types instead:
 
+### Basic Example
+
 ```rust
-use cryptan::classical::caesar::CaesarCipher;
+use cryptan::{CaesarCipher, ClassicalCipher};
 
-let c = CaesarCipher::from_key(3);
-let secret = c.encrypt("attack at dawn");
-assert_eq!(secret, "dwwdfn dw gdzq");
+fn main() {
+    let c = CaesarCipher::from_key(3);
+    let secret = c.encrypt("attack at dawn");
+    println!("Encrypted: {}", secret);
+    assert_eq!(secret, "dwwdfn dw gdzq");
 
-let recovered = c.decrypt(&secret);
-assert_eq!(recovered, "attack at dawn");
+    let recovered = c.decrypt(&secret);
+    println!("Decrypted: {}", recovered);
+    assert_eq!(recovered, "attack at dawn");
+
+    println!("✅ Caesar cipher test passed!");
+}
 ```
 
 For brute-force you get a `Vec<DecodedResult>` (see `src/utils/utils_struct.rs`) where each `DecodedResult` includes `text`, `key`, and optional `meaningful_ratio`.
+
+### Brute-force Example
+
+```rust
+use cryptan::{CaesarCipher, BruteForce};
+
+fn main() {
+    let ciphertext = "dwwdfn dw gdzq";
+    let mut cipher = CaesarCipher::from_key(0);
+
+    println!("Attempting brute-force attack on: {}", ciphertext);
+    let candidates = cipher.bruteforce(ciphertext, Some(0.3));
+
+    for (i, candidate) in candidates.iter().enumerate() {
+        println!("{:02}. Key: {}, Text: '{}', Confidence: {:.3}",
+                i + 1,
+                candidate.key,
+                candidate.text,
+                candidate.meaningful_ratio.unwrap_or(0.0));
+    }
+}
+```
 
 ## Important implementation notes
 
