@@ -1,6 +1,8 @@
 use std::fs;
 use std::collections::HashSet;
 
+static EMBEDDED_WORDS: &str = include_str!("../../public/words.txt");
+
 /// Normalizes a shift key to a valid range for Caesar cipher operations.
 ///
 /// Caesar ciphers operate on the 26-letter alphabet, so any shift value can be
@@ -90,8 +92,20 @@ pub fn parse_key_i8(k: i16) -> Result<i8, String> {
 /// assert!(words.contains("world"));
 /// ```
 pub fn load_set(path: &str) -> HashSet<String> {
-    let data = fs::read_to_string(path).expect("read");
-    data.lines().map(|s| s.trim().to_owned()).collect()
+    match fs::read_to_string(path) {
+        Ok(data) => data
+            .lines()
+            .map(|s| s.trim().to_owned())
+            .filter(|s| !s.is_empty())
+            .collect(),
+        Err(_e) => {
+            EMBEDDED_WORDS
+                .lines()
+                .map(|s| s.trim().to_owned())
+                .filter(|s| !s.is_empty())
+                .collect()
+        }
+    }
 }
 
 /// Calculates the meaningfulness ratio of text based on word frequency analysis.
