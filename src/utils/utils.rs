@@ -1,5 +1,5 @@
 use std::fs;
-use std::collections::HashSet;
+use std::collections::{HashSet, HashMap};
 
 static EMBEDDED_WORDS: &str = include_str!("../../public/words.txt");
 
@@ -47,4 +47,18 @@ pub fn meaningful_ratio(text: &str, wordlist: &HashSet<String>) -> Result<f32, B
 
     let meaningful_count = tokens.iter().filter(|t| word_set.contains(*t)).count();
     Ok(meaningful_count as f32 / tokens.len() as f32)
+}
+
+pub fn build_morse_maps(data: &[(&str, &str)]) -> (HashMap<char, String>, HashMap<String, char>) {
+    let mut map = HashMap::new();
+    let mut rev = HashMap::new();
+
+    for (c, m) in data {
+        if let Some(ch) = c.chars().next() {
+            map.insert(ch, m.to_string());
+            rev.insert(m.to_string(), ch);
+        }
+    }
+
+    (map, rev)
 }

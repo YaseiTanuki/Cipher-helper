@@ -8,3 +8,8 @@ pub trait ClassicalCipher {
 pub trait BruteForce {
     fn bruteforce(&mut self, input: &str, threshold: Option<f32>) -> Vec<DecodedResult>;
 }
+
+pub trait Codec {
+    fn encode(&self, input: &str) -> String;
+    fn decode(&self, input: &str) -> String;
+}
