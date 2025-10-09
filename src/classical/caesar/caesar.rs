@@ -1,70 +1,7 @@
 pub use crate::{normalize_shift, load_set, meaningful_ratio, ClassicalCipher, BruteForce, DecodedResult};
 use log::{warn, info};
 
-/// A Caesar cipher implementation supporting encryption, decryption, and brute-force attacks.
-///
-/// The Caesar cipher is a simple substitution cipher that shifts each letter in the
-/// plaintext by a fixed number of positions in the alphabet. This implementation
-/// supports both uppercase and lowercase letters while preserving non-alphabetic
-/// characters.
-///
-/// # Key Management
-///
-/// Keys are automatically normalized to the range 0-25 using modulo 26 arithmetic.
-/// Negative keys and keys greater than 26 are handled correctly:
-///
-/// - Key 3: "ABC" → "DEF"
-/// - Key -1: "ABC" → "ZAB"
-/// - Key 29: "ABC" → "DEF" (equivalent to key 3)
-///
-/// # Examples
-///
-/// ## Basic Usage
-///
-/// ```rust
-/// use cryptan::{CaesarCipher, ClassicalCipher};
-///
-/// let mut cipher = CaesarCipher::new();
-/// cipher.set_key(3);
-///
-/// let encrypted = cipher.encrypt("Hello, World!");
-/// assert_eq!(encrypted, "Khoor, Zruog!");
-///
-/// let decrypted = cipher.decrypt(&encrypted);
-/// assert_eq!(decrypted, "Hello, World!");
-/// ```
-///
-/// ## Builder Pattern
-///
-/// ```rust
-/// use cryptan::{CaesarCipher, ClassicalCipher};
-///
-/// let cipher = CaesarCipher::from_key(13); // ROT-13
-/// let result = cipher.encrypt("Why did the chicken cross the road?");
-/// // Result: "Jul qvq gur puvpxra pebff gur ebnq?"
-/// ```
-///
-/// ## Brute-force Attack
-///
-/// ```rust
-/// use cryptan::{CaesarCipher, BruteForce};
-///
-/// let ciphertext = "WKDQN BRX IRU WKH ILVK";
-/// let mut cipher = CaesarCipher::from_key(0);
-///
-/// let candidates = cipher.bruteforce(ciphertext, Some(0.3));
-/// for candidate in candidates {
-///     println!("Key {}: '{}' (confidence: {:.3})",
-///              candidate.key,
-///              candidate.text,
-///              candidate.meaningful_ratio.unwrap_or(0.0));
-/// }
-/// ```
 pub struct CaesarCipher {
-    /// The current shift key for this cipher instance.
-    ///
-    /// This value represents the number of positions each letter should be shifted
-    /// during encryption/decryption. The key is automatically normalized to 0-25.
     key: i8,
 }
 
@@ -87,7 +24,6 @@ impl CaesarCipher {
 }
 
 impl ClassicalCipher for CaesarCipher {
-    /// Encrypts `self.plain` with the provided rotation key and updates the encrypted buffer.
     fn encrypt(&self, input: &str) -> String {
         if self.key == 0 {
             warn!("Key is 0, no encryption performed.");
@@ -136,7 +72,6 @@ impl ClassicalCipher for CaesarCipher {
 }
 
 impl BruteForce for CaesarCipher {
-    /// Attempts to recover plaintext across all 26 rotations, filtering by an optional threshold.
     fn bruteforce(&mut self, input: &str, threshold: Option<f32>) -> Vec<DecodedResult> {
         let mut results: Vec<DecodedResult> = Vec::new();
 
