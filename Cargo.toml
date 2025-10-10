@@ -7,7 +7,7 @@ license = "Apache-2.0"
 description = "A simple crypto playground (Caesar, Morse, ...)."
 repository = "https://github.com/YaseiTanuki/Cryptan"
 readme = "README.md"
-keywords = ["crypto", "cipher", "caesar"]
+keywords = ["crypto", "cipher", "caesar", "morse"]
 categories = ["cryptography", "encoding"]
 include = [
     "src/**",
