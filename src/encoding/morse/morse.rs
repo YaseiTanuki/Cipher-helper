@@ -24,7 +24,8 @@ use std::collections::HashMap;
 /// ## Basic Usage
 ///
 /// ```rust
-/// use cryptan::encoding::morse::Morse;
+/// use cryptan::Morse;
+/// use cryptan::Codec;
 ///
 /// let morse = Morse::new();
 /// let encoded = morse.encode("HELLO");
@@ -37,7 +38,8 @@ use std::collections::HashMap;
 /// ## Language Switching
 ///
 /// ```rust
-/// use cryptan::encoding::morse::Morse;
+/// use cryptan::Morse;
+/// use cryptan::Codec;
 ///
 /// let mut morse = Morse::new();
 ///
@@ -73,7 +75,8 @@ impl Morse {
     /// # Examples
     ///
     /// ```rust
-    /// use cryptan::encoding::morse::Morse;
+    /// use cryptan::Morse;
+    /// use cryptan::Codec;
     ///
     /// let morse = Morse::new();
     /// let encoded = morse.encode("SOS");
@@ -141,7 +144,8 @@ impl Codec for Morse {
     /// # Examples
     ///
     /// ```rust
-    /// use cryptan::encoding::morse::Morse;
+    /// use cryptan::Morse;
+    /// use cryptan::Codec;
     ///
     /// let morse = Morse::new();
     ///
@@ -193,7 +197,8 @@ impl Codec for Morse {
     /// # Examples
     ///
     /// ```rust
-    /// use cryptan::encoding::morse::Morse;
+    /// use cryptan::Morse;
+    /// use cryptan::Codec;
     ///
     /// let morse = Morse::new();
     ///

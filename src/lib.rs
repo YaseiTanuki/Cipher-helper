@@ -19,7 +19,8 @@ pub use classical::*;
 /// # Examples
 ///
 /// ```rust
-/// use cryptan::encoding::morse::Morse;
+/// use cryptan::Morse;
+/// use cryptan::Codec;
 ///
 /// let morse = Morse::new();
 /// let encoded = morse.encode("HELLO");
