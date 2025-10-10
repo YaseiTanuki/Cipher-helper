@@ -1,0 +1,58 @@
+name: Auto Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            ext: ""
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            ext: ".exe"
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            ext: ""
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build binary
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Prepare release asset
+        run: |
+          mkdir -p dist
+          cp target/${{ matrix.target }}/release/cryptan${{ matrix.ext }} dist/
+          cd dist
+          zip -r "../cryptan-${{ matrix.target }}.zip" "cryptan${{ matrix.ext }}"
+          cd ..
+          echo "Built ${{ github.ref_name }} for ${{ matrix.target }}"
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: |
+            cryptan-${{ matrix.target }}.zip
+            README.md
+            DISCLAIMER.md
+            RESPONSIBLE_USE.md
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
