@@ -16,7 +16,8 @@
 //! # Example
 //!
 //! ```rust
-//! use cryptan::encoding::morse::{Morse, MorseLang};
+//! use cryptan::Morse;
+//! use cryptan::Codec;
 //!
 //! // Create a Morse encoder with International standard
 //! let mut morse = Morse::new();
