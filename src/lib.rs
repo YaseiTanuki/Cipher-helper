@@ -27,6 +27,7 @@ pub use classical::*;
 /// let decoded = morse.decode(&encoded);
 /// ```
 pub use encoding::*;
+/// Utility helpers including shift normalization and optional Python integration.
 pub use utils::*;
 /// Traits describing common cipher capabilities.
 pub use traits::*;
