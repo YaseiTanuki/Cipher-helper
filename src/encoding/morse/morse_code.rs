@@ -1,8 +1,10 @@
+/// Enumeration of supported Morse code languages
 pub enum MorseLang {
     International,
     American,
 }
 
+/// International Morse Code mapping
 pub const INTERNATIONAL_MORSE: &[(&str, &str)] = &[
     ("A", ".-"),
     ("B", "-..."),
@@ -42,6 +44,7 @@ pub const INTERNATIONAL_MORSE: &[(&str, &str)] = &[
     ("9", "----."),
 ];
 
+/// American Morse Code mapping
 pub const AMERICAN_MORSE: &[(&str, &str)] = &[
     ("A", ".-"),
     ("B", "-..."),

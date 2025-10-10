@@ -44,7 +44,7 @@ cargo run caesar -- decrypt 3 "dwwdfn dw gdzq"
 cargo run caesar -- brute "ftue rcjj" 0.6
 ```
 
-Note: `cargo run --` passes the following tokens to the binary. If you installed the package with `cargo install`, run the `caesar` binary directly (e.g. `caesar brute "ftue rcjj"`).
+Note: `cargo run --` passes the following tokens to the binary. If you installed the package with `cargo install`, run the `cryptan` binary directly (e.g. `cryptan caesar brute "ftue rcjj"`).
 
 ## Library usage
 
