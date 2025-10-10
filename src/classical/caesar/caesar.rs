@@ -61,10 +61,6 @@ use log::{warn, info};
 /// }
 /// ```
 pub struct CaesarCipher {
-    /// The current shift key for this cipher instance.
-    ///
-    /// This value represents the number of positions each letter should be shifted
-    /// during encryption/decryption. The key is automatically normalized to 0-25.
     key: i8,
 }
 
@@ -87,7 +83,6 @@ impl CaesarCipher {
 }
 
 impl ClassicalCipher for CaesarCipher {
-    /// Encrypts `self.plain` with the provided rotation key and updates the encrypted buffer.
     fn encrypt(&self, input: &str) -> String {
         if self.key == 0 {
             warn!("Key is 0, no encryption performed.");
@@ -136,7 +131,7 @@ impl ClassicalCipher for CaesarCipher {
 }
 
 impl BruteForce for CaesarCipher {
-    /// Attempts to recover plaintext across all 26 rotations, filtering by an optional threshold.
+        /// Attempts to recover plaintext across all 26 rotations, filtering by an optional threshold.
     fn bruteforce(&mut self, input: &str, threshold: Option<f32>) -> Vec<DecodedResult> {
         let mut results: Vec<DecodedResult> = Vec::new();
 
