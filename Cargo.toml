@@ -1,19 +1,21 @@
 [package]
 name = "cryptan"
-version = "0.3.2"
+version = "0.4.0"
 edition = "2021"
 authors = ["Tanuki"]
 license = "Apache-2.0"
 description = "A simple crypto playground (Caesar, Morse, ...)."
 repository = "https://github.com/YaseiTanuki/Cryptan"
 readme = "README.md"
-keywords = ["crypto", "cipher", "caesar", "morse"]
+keywords = ["YaseiTanuki", "crypto", "cipher", "caesar", "morse", "cryptan", "encryption", "decryption", "brute-force"]
 categories = ["cryptography", "encoding"]
 include = [
     "src/**",
     "public/**",
     "Cargo.toml",
     "README.md",
+    "DISCLAIMER.md",
+    "RESPONSIBLE_USE.md",
 ]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

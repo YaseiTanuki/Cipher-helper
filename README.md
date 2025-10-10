@@ -143,3 +143,8 @@ Primary crates used in this project:
 - [env_logger](https://crates.io/crates/env_logger) — A logger implementation that reads log level from environment variables (integrates with `log`).
 
 Special thanks to the maintainers and contributors of the linked projects for their time and open-source work — this project benefits from your efforts.
+
+---
+
+> [!WARNING]
+> See [DISCLAIMER](./DISCLAIMER.md) and [RESPONSIBLE_USE](./RESPONSIBLE_USE.md) for usage guidelines.
