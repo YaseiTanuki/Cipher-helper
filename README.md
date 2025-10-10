@@ -30,23 +30,27 @@ When installed, the binary name comes from `Cargo.toml` ([[bin]] name = "caesar"
 
 ## CLI usage
 
+The CLI supports three subcommands: `encrypt`, `decrypt`, and `brute`.
+
 Examples:
 
 ```powershell
 # encrypt: cargo run -- encrypt <key:i16> "plain text"
-cargo run caesar -- encrypt 3 "attack at dawn"
+cargo run -- encrypt 3 "attack at dawn"
 
 # decrypt: cargo run -- decrypt <key:i16> "encrypted text"
-cargo run caesar -- decrypt 3 "dwwdfn dw gdzq"
+cargo run -- decrypt 3 "dwwdfn dw gdzq"
 
 # brute-force: cargo run -- brute "encoded text" [threshold:f32]
 # threshold is optional; if omitted all candidates are returned (threshold defaults to 0.0)
-cargo run caesar -- brute "ftue rcjj" 0.6
+cargo run -- brute "ftue rcjj" 0.6
 ```
 
-Note: `cargo run --` passes the following tokens to the binary. If you installed the package with `cargo install`, run the `cryptan` binary directly (e.g. `cryptan caesar brute "ftue rcjj"`).
+Note: `cargo run --` passes the following tokens to the binary. If you installed the package with `cargo install`, run the `caesar` binary directly (e.g. `caesar brute "ftue rcjj"`).
 
 ## Library usage
+
+There are no top-level convenience functions called `caesar_encrypt`/`caesar_decrypt` in the current code. Use the provided types instead:
 
 ### Basic Example
 
@@ -110,12 +114,11 @@ Cipher-helper/
 ├── src/
 │   ├── lib.rs
 │   ├── main.rs
+│   ├── classical/    # module: `cryptan::classical`
+│   │   └── caesar/   # module: `cryptan::classical::caesar`
 │   ├── traits.rs
-│   ├── classical/        # module: `cryptan::classical`
-│   │   └── caesar/       # module: `cryptan::classical::caesar`
-│   ├── encoding/         # module: `cryptan::encoding`
-│   │   └── morse/        # module: `cryptan::encoding::morse`
-│   └── utils/            # module: `cryptan::utils`
+   │   
+│   └── utils/        # module: `cryptan::utils`
 └── target/
    └── ...
 ```
